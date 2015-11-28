@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_id": "map---copy",
+    "project_number": "289647044112",
+    "name": "Map - Copy"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289647044112:android:ee84f6d05feb4cb5",
+        "client_id": "android:com.example.map.map",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.example.map.map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711155224487-pps4s50omvfk5gqk74hkr3a0p0ijv2k3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.map.map",
+            "certificate_hash": "67446C213F139401AEEB8C15AED33D22DE25CA54"
+          }
+        }
+      ],
+      "api_key": [
+        
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": [
+            
+          ]
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": [
+            
+          ]
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [
+    
+  ],
+  "ARTIFACT_VERSION": "1"
+}

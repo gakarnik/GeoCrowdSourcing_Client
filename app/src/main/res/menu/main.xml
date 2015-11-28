@@ -1,0 +1,35 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+   <!-- <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"/>  -->
+
+    <item
+        android:id="@+id/rain"
+        android:icon="@drawable/rain"
+        android:title="@string/rain"
+        android:orderInCategory="1"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/no_rain"
+        android:icon="@drawable/no_rain"
+        android:title="@string/no_rain"
+        android:orderInCategory="2"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/snow"
+        android:icon="@drawable/snow"
+        android:title="@string/snow"
+        android:orderInCategory="3"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/no_snow"
+        android:icon="@drawable/no_snow"
+        android:title="@string/no_snow"
+        android:orderInCategory="4"
+        app:showAsAction="always"/>
+</menu>
