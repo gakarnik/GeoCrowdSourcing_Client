@@ -31,7 +31,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -53,32 +52,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import org.json.*;
-import android.support.v4.widget.DrawerLayout;
-import com.example.map.map.R;
-import android.view.ContextMenu;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-import org.json.*;
 import java.util.ArrayList;
 import java.util.List;
-import com.example.map.map.Connection.*;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -371,9 +346,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (item.getItemId()) {
             case 1:
                 Connection con = new Connection();
-             //   Connection.ConnectionPost post = con.new ConnectionPost(position);
-             //   post.execute();
+                Connection.ConnectionGet getWeather = con.new ConnectionGet();
+                getWeather.execute();
                 return true;
+
             case 2:
                 Toast.makeText(this, item.getTitle(),
                         Toast.LENGTH_SHORT).show();

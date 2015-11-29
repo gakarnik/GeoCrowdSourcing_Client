@@ -15,7 +15,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
 
@@ -57,7 +59,7 @@ public class Connection {
             System.out.println("I am here 1");
             try {
                 System.out.println("I am here 2");
-                connect2();
+                connectGetWeather();
             } catch (Exception e) {
                 System.out.println("I am here 3");
                 e.printStackTrace();
@@ -125,4 +127,49 @@ public class Connection {
         httpclient.execute(httpost, responseHandler);
         httpclient.getConnectionManager().shutdown();
     }
+    private void connectGetWeather()throws Exception {
+        HttpClient httpclient = new DefaultHttpClient();
+        JSONObject jsonObject;
+        JSONArray jsonArray;
+        JSONParser jsonParser = new JSONParser();
+        try {
+            System.out.println("Trying to get weather status");
+            HttpGet httpget = new HttpGet("http://10.0.2.2:3000/weather/get/-57.8400024734013/-34.4799990054175");
+            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                public String handleResponse(final HttpResponse response)
+                        throws ClientProtocolException, IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        System.out.println("Get failed");
+                        throw new ClientProtocolException(
+                                "Unexpected response status: " + status);
+                    }
+                }
+
+            };
+            String responseBody = httpclient.execute(httpget, responseHandler);
+            if(responseBody.length()>0)
+            {
+                jsonArray = (JSONArray) jsonParser.parse(responseBody);
+                jsonObject = (JSONObject)jsonArray.get(0);
+                String weather = (String) jsonObject.get("weather");
+                System.out.println("----------------Response from Get Weather status------------------------");
+                System.out.println(responseBody);
+                System.out.println(weather);
+            }
+            else
+            {
+                System.out.println("No response");
+            }
+
+        } finally {
+            httpclient.getConnectionManager().shutdown();
+        }
+    }
 }
+
+
