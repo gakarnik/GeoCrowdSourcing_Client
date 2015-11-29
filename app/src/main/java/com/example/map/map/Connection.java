@@ -53,13 +53,20 @@ public class Connection {
     }
 
     protected class ConnectionGet extends AsyncTask {
+        double latitude;
+        double longitude;
+
+        public ConnectionGet(double latitude, double longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
 
         @Override
         protected Object doInBackground(Object... arg0) {
             System.out.println("I am here 1");
             try {
                 System.out.println("I am here 2");
-                connectGetWeather();
+                connectGetWeather(this.latitude, this.longitude);
             } catch (Exception e) {
                 System.out.println("I am here 3");
                 e.printStackTrace();
@@ -127,14 +134,14 @@ public class Connection {
         httpclient.execute(httpost, responseHandler);
         httpclient.getConnectionManager().shutdown();
     }
-    private void connectGetWeather()throws Exception {
+    private void connectGetWeather(double lat, double lon)throws Exception {
         HttpClient httpclient = new DefaultHttpClient();
         JSONObject jsonObject;
         JSONArray jsonArray;
         JSONParser jsonParser = new JSONParser();
         try {
             System.out.println("Trying to get weather status");
-            HttpGet httpget = new HttpGet("http://10.0.2.2:3000/weather/get/-57.8400024734013/-34.4799990054175");
+            HttpGet httpget = new HttpGet("http://10.0.2.2:3000/weather/get/"+lat+"/"+lon);
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
                 public String handleResponse(final HttpResponse response)
@@ -155,11 +162,18 @@ public class Connection {
             if(responseBody.length()>0)
             {
                 jsonArray = (JSONArray) jsonParser.parse(responseBody);
-                jsonObject = (JSONObject)jsonArray.get(0);
-                String weather = (String) jsonObject.get("weather");
-                System.out.println("----------------Response from Get Weather status------------------------");
-                System.out.println(responseBody);
-                System.out.println(weather);
+                if(!jsonArray.isEmpty())
+                {
+                    jsonObject = (JSONObject)jsonArray.get(0);
+                    String weather = (String) jsonObject.get("weather");
+                    System.out.println("----------------Response from Get Weather status------------------------");
+                    System.out.println(responseBody);
+                    System.out.println(weather);
+                }
+                else
+                {
+                    System.out.println("Empty response");
+                }
             }
             else
             {

@@ -346,7 +346,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (item.getItemId()) {
             case 1:
                 Connection con = new Connection();
-                Connection.ConnectionGet getWeather = con.new ConnectionGet();
+                Connection.ConnectionGet getWeather = con.new ConnectionGet(position.latitude, position.longitude);
                 getWeather.execute();
                 return true;
 
