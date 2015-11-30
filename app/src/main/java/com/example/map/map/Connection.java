@@ -64,14 +64,15 @@ public class Connection {
         @Override
         protected Object doInBackground(Object... arg0) {
             System.out.println("I am here 1");
+            String weather = null;
             try {
                 System.out.println("I am here 2");
-                connectGetWeather(this.latitude, this.longitude);
+                weather = connectGetWeather(this.latitude, this.longitude);
             } catch (Exception e) {
                 System.out.println("I am here 3");
                 e.printStackTrace();
             }
-            return null;
+            return weather;
         }
 
     }
@@ -134,11 +135,12 @@ public class Connection {
         httpclient.execute(httpost, responseHandler);
         httpclient.getConnectionManager().shutdown();
     }
-    private void connectGetWeather(double lat, double lon)throws Exception {
+    private String connectGetWeather(double lat, double lon)throws Exception {
         HttpClient httpclient = new DefaultHttpClient();
         JSONObject jsonObject;
         JSONArray jsonArray;
         JSONParser jsonParser = new JSONParser();
+        String weather=null;
         try {
             System.out.println("Trying to get weather status");
             HttpGet httpget = new HttpGet("http://10.0.2.2:3000/weather/get/"+lat+"/"+lon);
@@ -165,7 +167,7 @@ public class Connection {
                 if(!jsonArray.isEmpty())
                 {
                     jsonObject = (JSONObject)jsonArray.get(0);
-                    String weather = (String) jsonObject.get("weather");
+                    weather = (String) jsonObject.get("weather");
                     System.out.println("----------------Response from Get Weather status------------------------");
                     System.out.println(responseBody);
                     System.out.println(weather);
@@ -173,6 +175,8 @@ public class Connection {
                 else
                 {
                     System.out.println("Empty response");
+                    weather = "snow";
+
                 }
             }
             else
@@ -183,6 +187,7 @@ public class Connection {
         } finally {
             httpclient.getConnectionManager().shutdown();
         }
+        return weather;
     }
 }
 
