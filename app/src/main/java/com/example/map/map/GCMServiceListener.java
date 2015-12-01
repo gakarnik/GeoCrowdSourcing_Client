@@ -4,13 +4,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by gandhali on 11/25/15.
@@ -28,9 +34,14 @@ public class GCMServiceListener extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Double lat = Double.parseDouble(sharedPreferences.getString("turklat", "0"));
+        Double lon = Double.parseDouble(sharedPreferences.getString("turklng", "0"));
+        sharedPreferences.edit().putBoolean("turknotification",true).apply();
         String message = data.getString("message");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
+
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.

@@ -255,7 +255,7 @@ public class Connection {
                 {
                     // add a pop-up to say no turk available at this moment
                     System.out.println("Empty response");
-                    weather = "snow";
+                    //weather = "snow";
                 }
             }
             else

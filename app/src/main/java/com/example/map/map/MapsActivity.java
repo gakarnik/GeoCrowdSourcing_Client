@@ -259,30 +259,51 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void reportWeather(MenuItem item){
 
+        Connection con = new Connection();
+        Connection.ConnectionPostWeatherToStats postWeather;
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        // Add a marker in Sydney and move the camera
+        LatLng sydney ;
+     //   boolean no = sharedPreferences.getBoolean("turknotification", false);
+       // if(no){
+            Double lat = Double.parseDouble(sharedPreferences.getString("turklat", "0"));
+            Double lon = Double.parseDouble(sharedPreferences.getString("turklng", "0"));
+            sydney = new LatLng(lat,lon);
+       // }
+
         switch (item.getItemId()){
             case R.id.rain:
                 mMap.addMarker(new MarkerOptions()
-                        .position(position)
+                        .position(sydney)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.rain)));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, "rain");
+                postWeather.execute();
                 break;
             case R.id.no_rain:
                 mMap.addMarker(new MarkerOptions()
-                        .position(position)
+                        .position(sydney)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.no_rain)));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no rain");
+                postWeather.execute();
                 break;
             case R.id.snow:
                 mMap.addMarker(new MarkerOptions()
-                        .position(position)
+                        .position(sydney)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.snow)));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, "snow");
+                postWeather.execute();
                 break;
             case R.id.no_snow:
                 mMap.addMarker(new MarkerOptions()
-                        .position(position)
+                        .position(sydney)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.no_snow)));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no snow");
+                postWeather.execute();
                 break;
             default:
                 break;
@@ -463,9 +484,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(28,77);
+        LatLng sydney ;
+        boolean no = sharedPreferences.getBoolean("turknotification", false);
+        if(no){
+            Double lat = Double.parseDouble(sharedPreferences.getString("turklat", "0"));
+            Double lon = Double.parseDouble(sharedPreferences.getString("turklng", "0"));
+            sydney = new LatLng(lat,lon);
+        }
+        else
+            sydney= new LatLng(28,77);
+
         mMarker = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Los Angeles USC"));
         System.out.println("loation la");
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
@@ -473,6 +503,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnected(Bundle bundle) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
@@ -480,8 +511,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             this.turkLat = mLastLocation.getLatitude();
             this.turkLon = mLastLocation.getLongitude();
         }
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        sharedPreferences.edit().putString("turklat",String.valueOf(turkLat)).apply();
+        sharedPreferences.edit().putString("turklng", String.valueOf(turkLon)).apply();
+        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
         String token = sharedPreferences.getString("gcmToken", "dummy");
         Connection con = new Connection();
         // Connection.ConnectionPost post = con.new ConnectionPost(Profile.getLocation(), token);
