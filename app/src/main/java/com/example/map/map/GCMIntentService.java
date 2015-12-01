@@ -14,22 +14,19 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import com.example.map.map.Connection.*;
-import com.example.map.map.Profile;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
 
 public class GCMIntentService extends IntentService{
 
     Context mContext = this;
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
-    public static final String GCM_TOKEN = "gcmToken";
     String token;
+    public static final String GCM_TOKEN = "gcmToken";
+
+
     public GCMIntentService() {
         super(TAG);
     }
@@ -52,17 +49,15 @@ public class GCMIntentService extends IntentService{
             Log.i(TAG, "GCM Registration Token: " + token);
 
             // TODO: Implement this method to send any registration to your app's servers.
+         //   sendRegistrationToServer(token);
+
             // Subscribe to topic channels
-            intent.putExtra("token", token);
             subscribeTopics(token);
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
-            sharedPreferences.edit().putString(GCM_TOKEN, token).apply();
-            System.out.println("token>>>>>>>>>>>>>>>");
-            System.out.println(token);
             // [END register_for_gcm]
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
@@ -70,6 +65,7 @@ public class GCMIntentService extends IntentService{
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
+        sharedPreferences.edit().putString(GCM_TOKEN, token).apply();
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
@@ -83,7 +79,11 @@ public class GCMIntentService extends IntentService{
      *
      * @param token The new token.
      */
-
+//    void sendRegistrationToServer(String token) {
+//        Log.d(TAG, "token: " + token);
+//        Connection con = new Connection();
+//        // Connection.ConnectionPost post = con.new ConnectionPost(Profile.getLocation(), token);
+//    }
 
     /**
      * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.

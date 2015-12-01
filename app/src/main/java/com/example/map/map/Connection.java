@@ -1,6 +1,10 @@
 package com.example.map.map;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,6 +24,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by gandhali on 11/25/15.
@@ -30,6 +35,7 @@ public class Connection {
     // Connection(LatLng p) { this.p = p; }
     String url = "10.0.2.2:3000";
 //   String url = "192.168.43.56:3000";
+
     protected class ConnectionPost extends AsyncTask {
 
         private LatLng position;
@@ -38,6 +44,7 @@ public class Connection {
             this.position =p;
             this.id = id;
         }
+
         @Override
         protected Object doInBackground(Object... arg0) {
             System.out.println("I am here 1");
@@ -78,9 +85,10 @@ public class Connection {
     }
 
 
-    protected class ConnectionGet extends AsyncTask {
+    protected class ConnectionGet extends AsyncTask<Object,Object,String> {
         double latitude;
         double longitude;
+        private ProgressBar progressBar;
 
         public ConnectionGet(double latitude, double longitude) {
             this.latitude = latitude;
@@ -88,7 +96,25 @@ public class Connection {
         }
 
         @Override
-        protected Object doInBackground(Object... arg0) {
+        protected void onPreExecute() {
+            progressBar = new MapsActivity().getProgressBar();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            progressBar.setVisibility(View.GONE);
+//            if (this.dialog.isShowing()) { // if dialog box showing = true
+//                this.dialog.dismiss(); // dismiss it
+//            }
+//            if (result.isEmpty()) {
+//                this.dialog.dismiss();
+//                //also show register success dialog
+//            }
+        }
+
+        @Override
+        protected String doInBackground(Object... arg0) {
             System.out.println("I am here 1");
             String weather = null;
             try {
@@ -100,7 +126,6 @@ public class Connection {
             }
             return weather;
         }
-
     }
 
     private void connect2()throws Exception {
@@ -228,9 +253,9 @@ public class Connection {
                 }
                 else
                 {
+                    // add a pop-up to say no turk available at this moment
                     System.out.println("Empty response");
                     weather = "snow";
-
                 }
             }
             else
