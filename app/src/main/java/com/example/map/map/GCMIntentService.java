@@ -14,17 +14,18 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
-import com.example.map.map.Connection.*;
-import com.example.map.map.Profile;
-import com.google.android.gms.maps.model.LatLng;
 
 public class GCMIntentService extends IntentService{
 
     Context mContext = this;
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
+    String token;
+    public static final String GCM_TOKEN = "gcmToken";
+
 
     public GCMIntentService() {
         super(TAG);
@@ -42,7 +43,7 @@ public class GCMIntentService extends IntentService{
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
+            token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
@@ -64,6 +65,7 @@ public class GCMIntentService extends IntentService{
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
+        sharedPreferences.edit().putString(GCM_TOKEN, token).apply();
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);

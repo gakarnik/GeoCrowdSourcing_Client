@@ -456,6 +456,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mLongitudeText = String.valueOf(mLastLocation.getLongitude());
         }
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        String token = sharedPreferences.getString("gcmToken", "dummy");
+        System.out.println("token>>>>>>>" + token);
         System.out.println("Latitude>>>>>>>" + mLatitudeText);
         System.out.println("Longitude>>>>>>>" + mLongitudeText);
 
