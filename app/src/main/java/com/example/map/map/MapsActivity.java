@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,6 +49,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -85,11 +89,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng position;
     private Marker mMarker;
 
+    private ProgressBar mSpinner;
+
     GoogleApiClient mGoogleApiClient;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+
+    public double turkLatitude;
+    public double turkLongitude;
+    public String gcmid;
+    Intent intent;
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -101,7 +112,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        System.out.println("From ON create");
         this.buildGoogleApiClient();
         mGoogleApiClient.connect();
 
@@ -126,14 +137,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, GCMIntentService.class);
+            intent = new Intent(this, GCMIntentService.class);
+//            intent.getBundleExtra("token");
             startService(intent);
         }
+
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         mTitle = mDrawerTitle = getTitle();
+
+        mSpinner = (ProgressBar)findViewById(R.id.progressBar1);
 
         mContext = this;
         // load slide menu items
@@ -246,28 +261,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void reportWeather(MenuItem item){
+        Connection con = new Connection();
+        //Connection.ConnectionPostWeatherToStats postWeather = con.new ConnectionPostWeatherToStats(new LatLng(28, 77), (String) item.getTitle());
+        Connection.ConnectionPostWeatherToStats postWeather = con.new ConnectionPostWeatherToStats(position, (String) item.getTitle());
+        postWeather.execute();
         switch (item.getItemId()){
             case R.id.rain:
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(28, 77))
+                        .position(position)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.rain)));
+
                 break;
             case R.id.no_rain:
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(28,77))
+                        .position(position)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.no_rain)));
                 break;
             case R.id.snow:
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(28,77))
+                        .position(position)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.snow)));
                 break;
             case R.id.no_snow:
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(28,77))
+                        .position(position)
                         .icon(BitmapDescriptorFactory.
                                 fromResource(R.drawable.no_snow)));
                 break;
@@ -350,13 +370,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             switch (item.getItemId()) {
                 case 1:     //get weather info
                     Connection con = new Connection();
+                    position = new LatLng(34.01801801801802,-118.29965893033516);
                     Connection.ConnectionGet getWeather = con.new ConnectionGet(position.latitude, position.longitude);
                     String weather = (String) getWeather.execute().get();
                     System.out.println("onContextItemSelected "+weather);
-                    MarkerOptions marker = new MarkerOptions().position(new LatLng(position.latitude, position.longitude)).title(weather);
+                    mSpinner.setVisibility(View.VISIBLE);
+                  //  MarkerOptions marker = new MarkerOptions().position(new LatLng(position.latitude, position.longitude)).title(weather);
 
-                    marker.icon(BitmapDescriptorFactory.fromResource(getResources().getIdentifier(weather, "drawable", "com.example.map.map")));
-                    mMap.addMarker(marker);
+                   // marker.icon(BitmapDescriptorFactory.fromResource(getResources().getIdentifier(weather, "drawable", "com.example.map.map")));
+                   // mMap.addMarker(marker);
                     return true;
 
                 case 2:     //request stats
@@ -411,43 +433,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
-    public void method(){
-        try {
-
-            URL url = new URL("http://10.0.2.2:3000/turks/get");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-
-            if (conn.getResponseCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    (conn.getInputStream())));
-
-            String output;
-            System.out.println("Output from Server .... \n");
-            while ((output = br.readLine()) != null) {
-                System.out.println(output);
-            }
-
-            conn.disconnect();
-
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
-
-
-    }
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -460,19 +445,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnected(Bundle bundle) {
+        System.out.println("From ON connected");
+
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        String mLatitudeText = null;
-        String mLongitudeText = null;
 
         if (mLastLocation != null) {
-            mLatitudeText = String.valueOf(mLastLocation.getLatitude());
-            mLongitudeText = String.valueOf(mLastLocation.getLongitude());
+            turkLatitude = mLastLocation.getLatitude();
+            turkLongitude = mLastLocation.getLongitude();
         }
 
-        System.out.println("Latitude>>>>>>>" + mLatitudeText);
-        System.out.println("Longitude>>>>>>>" + mLongitudeText);
+        System.out.println("Latitude>>>>>>>" + turkLatitude);
+        System.out.println("Longitude>>>>>>>" + turkLongitude);
 
+        String token = this.getSharedPreferences("gcmToken", Context.MODE_PRIVATE).getString("gcmToken","default");
+        Connection con = new Connection();
+        Connection.ConnectionPost post = con.new ConnectionPost(new LatLng(this.turkLatitude, this.turkLongitude),token );
+        post.execute();
     }
 
     @Override

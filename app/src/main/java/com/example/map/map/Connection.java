@@ -28,8 +28,9 @@ public class Connection {
     // GET POST - Komal
     // private LatLng p;
     // Connection(LatLng p) { this.p = p; }
+    String url = "10.0.2.2:3000";
+//   String url = "192.168.43.56:3000";
     protected class ConnectionPost extends AsyncTask {
-
 
         private LatLng position;
         private String id;
@@ -51,6 +52,31 @@ public class Connection {
         }
 
     }
+
+
+    protected class ConnectionPostWeatherToStats extends AsyncTask {
+
+        private LatLng position;
+        private String weather;
+        ConnectionPostWeatherToStats(LatLng p, String weather){
+            this.position =p;
+            this.weather = weather;
+        }
+        @Override
+        protected Object doInBackground(Object... arg0) {
+            System.out.println("I am here 1");
+            try {
+                System.out.println("I am here 2");
+                connectPostWeather(position.latitude, position.longitude, weather);
+            } catch (Exception e) {
+                System.out.println("I am here 3");
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+    }
+
 
     protected class ConnectionGet extends AsyncTask {
         double latitude;
@@ -81,7 +107,7 @@ public class Connection {
         HttpClient httpclient = new DefaultHttpClient();
         try {
             System.out.println("I am here 5");
-            HttpGet httpget = new HttpGet("http://10.0.2.2:3000/turks/get");
+            HttpGet httpget = new HttpGet("http://"+url+"/turks/get");
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
                 public String handleResponse(final HttpResponse response)
@@ -118,7 +144,7 @@ public class Connection {
 
         //instantiates httpclient to make request
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httpost = new HttpPost("http://10.0.2.2:3000/turks/location/post");
+        HttpPost httpost = new HttpPost("http://"+url+"/turks/location/post");
 
         //passes the results to a string builder/entity
         StringEntity se = new StringEntity(json.toString());
@@ -135,6 +161,34 @@ public class Connection {
         httpclient.execute(httpost, responseHandler);
         httpclient.getConnectionManager().shutdown();
     }
+
+    private void connectPostWeather(double lat, double lon, String weather) throws Exception{
+        JSONObject json = new JSONObject() ;//jsonParam[0];
+        json.put("weather", weather);
+        json.put("lat", lat);
+        json.put("lon", lon);
+
+
+        //instantiates httpclient to make request
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httpost = new HttpPost("http://"+url+"/stats/weather/post");
+
+        //passes the results to a string builder/entity
+        StringEntity se = new StringEntity(json.toString());
+        System.out.println("I am here 10000  "+se);
+        //sets the post request as the resulting string
+        httpost.setEntity(se);
+        //sets a request header so the page receving the request
+        //will know what to do with it
+        httpost.setHeader("Accept", "application/json");
+        httpost.setHeader("Content-type", "application/json");
+
+        //Handles what is returned from the page
+        ResponseHandler responseHandler = new BasicResponseHandler();
+        httpclient.execute(httpost, responseHandler);
+        httpclient.getConnectionManager().shutdown();
+    }
+
     private String connectGetWeather(double lat, double lon)throws Exception {
         HttpClient httpclient = new DefaultHttpClient();
         JSONObject jsonObject;
@@ -143,7 +197,7 @@ public class Connection {
         String weather=null;
         try {
             System.out.println("Trying to get weather status");
-            HttpGet httpget = new HttpGet("http://10.0.2.2:3000/weather/get/"+lat+"/"+lon);
+            HttpGet httpget = new HttpGet("http://"+url+"/weather/get/"+lat+"/"+lon);
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
                 public String handleResponse(final HttpResponse response)
