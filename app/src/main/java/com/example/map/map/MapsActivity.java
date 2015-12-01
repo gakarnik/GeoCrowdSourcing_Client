@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.location.Address;
 import android.location.Geocoder;
@@ -333,30 +334,43 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return true;
         }
         // Handle action bar actions click
-        switch (item.getItemId()) {
-            case R.string.action_settings:
+    /*    switch (item.getItemId()) {
+            case R.string.rain:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
+        }*/
+        reportWeather(item);
+        return true;
     }
 
 
     public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 1:
-                Connection con = new Connection();
-                Connection.ConnectionGet getWeather = con.new ConnectionGet();
-                getWeather.execute();
-                return true;
+        try{
+            switch (item.getItemId()) {
+                case 1:     //get weather info
+                    Connection con = new Connection();
+                    Connection.ConnectionGet getWeather = con.new ConnectionGet(position.latitude, position.longitude);
+                    String weather = (String) getWeather.execute().get();
+                    System.out.println("onContextItemSelected "+weather);
+                    MarkerOptions marker = new MarkerOptions().position(new LatLng(position.latitude, position.longitude)).title(weather);
 
-            case 2:
-                Toast.makeText(this, item.getTitle(),
-                        Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+                    marker.icon(BitmapDescriptorFactory.fromResource(getResources().getIdentifier(weather, "drawable", "com.example.map.map")));
+                    mMap.addMarker(marker);
+                    return true;
+
+                case 2:     //request stats
+                    Toast.makeText(this, item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                default:
+                    return super.onContextItemSelected(item);
+            }
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return super.onContextItemSelected(item);
     }
 
     /***
