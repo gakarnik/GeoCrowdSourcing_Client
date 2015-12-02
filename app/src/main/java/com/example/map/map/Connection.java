@@ -1,12 +1,18 @@
 package com.example.map.map;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,8 +39,8 @@ public class Connection {
     // GET POST - Komal
     // private LatLng p;
     // Connection(LatLng p) { this.p = p; }
-    String url = "10.0.2.2:3000";
-//   String url = "192.168.43.56:3000";
+  //  String url = "10.0.2.2:3000";
+   String url = "192.168.43.56:3000";
 
     protected class ConnectionPost extends AsyncTask {
 
@@ -89,6 +95,8 @@ public class Connection {
         double latitude;
         double longitude;
         private ProgressBar progressBar;
+        ProgressDialog dialog;
+        private GoogleMap map;
 
         public ConnectionGet(double latitude, double longitude) {
             this.latitude = latitude;
@@ -97,20 +105,52 @@ public class Connection {
 
         @Override
         protected void onPreExecute() {
-            progressBar = new MapsActivity().getProgressBar();
-            progressBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+            System.out.println("onPreExecute");
+//            progressBar = MapsActivity.getProgressBar();
+//            progressBar.setVisibility(ProgressBar.VISIBLE);
+
+            ProgressDialog pd = new ProgressDialog(MapsActivity.mContext);
+            pd.setTitle("Fetching weather status");
+            pd.setMessage("Please wait...");
+            pd.setCancelable(false);
+            pd.setIndeterminate(true);
+            dialog = pd;
+            pd.show();
+
         }
 
         @Override
         protected void onPostExecute(String result) {
-            progressBar.setVisibility(View.GONE);
-//            if (this.dialog.isShowing()) { // if dialog box showing = true
-//                this.dialog.dismiss(); // dismiss it
-//            }
-//            if (result.isEmpty()) {
-//                this.dialog.dismiss();
-//                //also show register success dialog
-//            }
+            super.onPostExecute(result);
+//            System.out.println("onPostExecute");
+//            progressBar.setVisibility(ProgressBar.INVISIBLE);
+            if (this.dialog.isShowing()) { // if dialog box showing = true
+                this.dialog.dismiss(); // dismiss it
+            }
+            if (result == null) {
+                this.dialog.dismiss();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapsActivity.mContext);
+                alertDialogBuilder
+                        .setMessage("No Turks found at this location")
+                        .setCancelable(true)
+                        .setNegativeButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+                alertDialogBuilder.show();
+                //also show register success dialog
+            }
+            else{
+
+                MarkerOptions marker = new MarkerOptions().position(new LatLng(this.latitude, this.longitude)).title(result);
+                result = result.toLowerCase().replace(' ', '_');
+                marker.icon(BitmapDescriptorFactory.fromResource(MapsActivity.mContext.getResources().getIdentifier(result, "drawable", "com.example.map.map")));
+                map.addMarker(marker);
+            }
         }
 
         @Override
@@ -120,6 +160,8 @@ public class Connection {
             try {
                 System.out.println("I am here 2");
                 weather = connectGetWeather(this.latitude, this.longitude);
+                map = (GoogleMap) arg0[0];
+                connectGetWeather(this.latitude, this.longitude);
             } catch (Exception e) {
                 System.out.println("I am here 3");
                 e.printStackTrace();
@@ -267,6 +309,7 @@ public class Connection {
             httpclient.getConnectionManager().shutdown();
         }
         return weather;
+
     }
 }
 

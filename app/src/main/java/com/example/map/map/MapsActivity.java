@@ -82,7 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
 
-    private Activity mContext;
+    public static Activity mContext;
 
     private LatLng position;
     private Marker mMarker;
@@ -90,14 +90,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public double turkLat;
     public double turkLon;
 
+    private String username;
+    private String usertype;
+
     GoogleApiClient mGoogleApiClient;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
-    public static ProgressBar progressBar;
+
+    private MenuItem selected;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+    public static ProgressBar progressBar;
 
-    public ProgressBar getProgressBar(){
+    public static ProgressBar getProgressBar(){
         return progressBar;
     }
 
@@ -118,7 +123,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+      //  progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -161,18 +166,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navDrawerItems = new ArrayList<NavDrawerItem>();
 
         // adding nav drawer items to array
-        // Home
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        username = sharedPreferences.getString("username", "");
+        usertype = sharedPreferences.getString("usertype", "");
+
+
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        // Find People
+// Profile
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        // Photos
+// Notification
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-        // Communities, Will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
-        // Pages
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-        // What's hot, We  will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
+// SignIn
+        if(username.equals(""))
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
+// SignOut
+        if(!username.equals(""))
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+
 
 
         // Recycle the typed array
@@ -216,6 +226,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mMap = mapFragment.getMap();
+        //mMap = mapFragment.getMapAsync(this);
         registerForContextMenu(findViewById(R.id.map));
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -227,6 +238,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMarker.setPosition(p);
                 openContextMenu(findViewById(R.id.map));
                 position = p;
+
+
                /* ConnectionPost con = new ConnectionPost(position);
                 con.execute();
                 ConnectionGet con = new ConnectionGet();
@@ -250,12 +263,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         };
 
-
         // Setting button click event listener for the find button
         btn_find.setOnClickListener(findClickListener);
         mapFragment.getMapAsync(this);
 
+        if(getIntent().getBundleExtra("usertype") != null) {
+            usertype = getIntent().getBundleExtra("usertype").toString();
+            username = getIntent().getBundleExtra("username").toString();
+        }
     }
+
+
+    @Override
+    public void onContextMenuClosed (Menu menu){
+        if(selected != null && selected.getItemId() == 1) {
+            try {
+                //ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+                //ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+               // progressBar.setVisibility(View.VISIBLE);
+                Connection con = new Connection();
+                Connection.ConnectionGet getWeather = con.new ConnectionGet(position.latitude, position.longitude);
+                getWeather.execute(mMap);
+                //String weather = (String) getWeather.execute().get();
+//                System.out.println("onContextItemSelected " + weather);
+//               // progressBar.setVisibility(View.INVISIBLE);
+//                MarkerOptions marker = new MarkerOptions().position(new LatLng(position.latitude, position.longitude)).title(weather);
+//                weather = weather.toLowerCase().replace(' ', '_');
+//                marker.icon(BitmapDescriptorFactory.fromResource(getResources().getIdentifier(weather, "drawable", "com.example.map.map")));
+//                mMap.addMarker(marker);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public void reportWeather(MenuItem item){
 
@@ -272,42 +313,48 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             sydney = new LatLng(lat,lon);
        // }
 
-        switch (item.getItemId()){
-            case R.id.rain:
-                mMap.addMarker(new MarkerOptions()
+        mMap.addMarker(new MarkerOptions()
                         .position(sydney)
                         .icon(BitmapDescriptorFactory.
-                                fromResource(R.drawable.rain)));
-                postWeather = con.new ConnectionPostWeatherToStats(sydney, "rain");
+                                fromResource(getResources().getIdentifier(String.valueOf(item.getItemId()), "drawable", "com.example.map.map"))));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, String.valueOf(item.getItemId()));
                 postWeather.execute();
-                break;
-            case R.id.no_rain:
-                mMap.addMarker(new MarkerOptions()
-                        .position(sydney)
-                        .icon(BitmapDescriptorFactory.
-                                fromResource(R.drawable.no_rain)));
-                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no rain");
-                postWeather.execute();
-                break;
-            case R.id.snow:
-                mMap.addMarker(new MarkerOptions()
-                        .position(sydney)
-                        .icon(BitmapDescriptorFactory.
-                                fromResource(R.drawable.snow)));
-                postWeather = con.new ConnectionPostWeatherToStats(sydney, "snow");
-                postWeather.execute();
-                break;
-            case R.id.no_snow:
-                mMap.addMarker(new MarkerOptions()
-                        .position(sydney)
-                        .icon(BitmapDescriptorFactory.
-                                fromResource(R.drawable.no_snow)));
-                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no snow");
-                postWeather.execute();
-                break;
-            default:
-                break;
-        }
+//        switch (item.getItemId()){
+//            case R.id.rain:
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(sydney)
+//                        .icon(BitmapDescriptorFactory.
+//                                fromResource(R.drawable.rain)));
+//                postWeather = con.new ConnectionPostWeatherToStats(sydney, "rain");
+//                postWeather.execute();
+//                break;
+//            case R.id.no_rain:
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(sydney)
+//                        .icon(BitmapDescriptorFactory.
+//                                fromResource(R.drawable.no_rain)));
+//                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no rain");
+//                postWeather.execute();
+//                break;
+//            case R.id.snow:
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(sydney)
+//                        .icon(BitmapDescriptorFactory.
+//                                fromResource(R.drawable.snow)));
+//                postWeather = con.new ConnectionPostWeatherToStats(sydney, "snow");
+//                postWeather.execute();
+//                break;
+//            case R.id.no_snow:
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(sydney)
+//                        .icon(BitmapDescriptorFactory.
+//                                fromResource(R.drawable.no_snow)));
+//                postWeather = con.new ConnectionPostWeatherToStats(sydney, "no snow");
+//                postWeather.execute();
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     /**
@@ -380,17 +427,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public boolean onContextItemSelected(MenuItem item) {
+        selected = item;
         try{
             switch (item.getItemId()) {
                 case 1:     //get weather info
-                    Connection con = new Connection();
-                    Connection.ConnectionGet getWeather = con.new ConnectionGet(position.latitude, position.longitude);
-                    String weather = (String) getWeather.execute().get();
-                    System.out.println("onContextItemSelected "+weather);
-                    MarkerOptions marker = new MarkerOptions().position(new LatLng(position.latitude, position.longitude)).title(weather);
 
-                    marker.icon(BitmapDescriptorFactory.fromResource(getResources().getIdentifier(weather, "drawable", "com.example.map.map")));
-                    mMap.addMarker(marker);
                     return true;
 
                 case 2:     //request stats
@@ -434,6 +475,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
+
         mDrawerToggle.syncState();
     }
 
@@ -494,11 +536,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             sydney = new LatLng(lat,lon);
         }
         else
-            sydney= new LatLng(28,77);
+            sydney= new LatLng(34.03603603603604,-118.2812945258802);
 
         mMarker = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Los Angeles USC"));
         System.out.println("loation la");
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
     }
 
     @Override
@@ -646,6 +689,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 long id) {
             // display view for selected nav drawer item
             displayView(position);
+
+            if(position == 3){
+                if(username.equals("")){//login button activity
+                    Intent res = new Intent(MapsActivity.this, SignInActivity.class);
+                    startActivity(res);
+                    finish();
+                }else{
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(parent.getContext());
+                    sharedPreferences.edit().putString("username","").apply();
+                    sharedPreferences.edit().putString("usertype","").apply();
+                    Intent res = new Intent(MapsActivity.this, MapsActivity.class);
+                    startActivity(res);
+                    finish();
+                }
+            }
         }
     }
 

@@ -6,30 +6,85 @@
         android:title="@string/action_settings"/>  -->
 
     <item
-        android:id="@+id/rain"
-        android:icon="@drawable/rain"
+        android:id="@+id/w1"
+        android:icon="@drawable/w1"
         android:title="@string/rain"
-        android:orderInCategory="1"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:orderInCategory="1" />
 
     <item
-        android:id="@+id/no_rain"
-        android:icon="@drawable/no_rain"
-        android:title="@string/no_rain"
-        android:orderInCategory="2"
-        app:showAsAction="always"/>
+        android:id="@+id/w2"
+        android:icon="@drawable/w2"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="2" />
 
     <item
-        android:id="@+id/snow"
-        android:icon="@drawable/snow"
-        android:title="@string/snow"
-        android:orderInCategory="3"
-        app:showAsAction="always"/>
-
+        android:id="@+id/w3"
+        android:icon="@drawable/w3"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="3" />
     <item
-        android:id="@+id/no_snow"
-        android:icon="@drawable/no_snow"
-        android:title="@string/no_snow"
-        android:orderInCategory="4"
-        app:showAsAction="always"/>
+        android:id="@+id/w4"
+        android:icon="@drawable/w4"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="4" />
+    <item
+        android:id="@+id/w5"
+        android:icon="@drawable/w5"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="5" />
+    <item
+        android:id="@+id/w6"
+        android:icon="@drawable/w6"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="6" />
+    <item
+        android:id="@+id/w7"
+        android:icon="@drawable/w7"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:menuCategory="container"
+        android:orderInCategory="7" />
+    <item
+        android:id="@+id/w8"
+        android:icon="@drawable/w8"
+        android:title="@string/rain"
+        app:showAsAction="always"
+        android:orderInCategory="8" />
+    <item
+        android:id="@+id/w9"
+        android:icon="@drawable/w9"
+        android:title="@string/rain"
+        android:orderInCategory="9" />
+    <item
+        android:id="@+id/w10"
+        android:icon="@drawable/w10"
+        android:title="@string/rain"
+        android:orderInCategory="10" />
+
+    <!--<item-->
+        <!--android:id="@+id/no_rain"-->
+        <!--android:icon="@drawable/no_rain"-->
+        <!--android:title="@string/no_rain"-->
+        <!--android:orderInCategory="2"-->
+        <!--app:showAsAction="always"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/snow"-->
+        <!--android:icon="@drawable/snow"-->
+        <!--android:title="@string/snow"-->
+        <!--android:orderInCategory="3"-->
+        <!--app:showAsAction="always"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/no_snow"-->
+        <!--android:icon="@drawable/no_snow"-->
+        <!--android:title="@string/no_snow"-->
+        <!--android:orderInCategory="4"-->
+        <!--app:showAsAction="always"/>-->
 </menu>
