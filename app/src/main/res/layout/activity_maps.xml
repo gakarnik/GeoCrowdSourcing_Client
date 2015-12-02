@@ -71,6 +71,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 class="com.google.android.gms.maps.SupportMapFragment" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logged in as Turk"
+                android:visibility="visible"
+                android:id="@+id/textView7" />
         </LinearLayout>
 
 

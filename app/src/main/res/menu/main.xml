@@ -8,63 +8,63 @@
     <item
         android:id="@+id/w1"
         android:icon="@drawable/w1"
-        android:title="@string/rain"
+        android:title="w1"
         app:showAsAction="always"
         android:orderInCategory="1" />
 
     <item
         android:id="@+id/w2"
         android:icon="@drawable/w2"
-        android:title="@string/rain"
+        android:title="w2"
         app:showAsAction="always"
         android:orderInCategory="2" />
 
     <item
         android:id="@+id/w3"
         android:icon="@drawable/w3"
-        android:title="@string/rain"
+        android:title="w3"
         app:showAsAction="always"
         android:orderInCategory="3" />
     <item
         android:id="@+id/w4"
         android:icon="@drawable/w4"
-        android:title="@string/rain"
+        android:title="w4"
         app:showAsAction="always"
         android:orderInCategory="4" />
     <item
         android:id="@+id/w5"
         android:icon="@drawable/w5"
-        android:title="@string/rain"
+        android:title="w5"
         app:showAsAction="always"
         android:orderInCategory="5" />
     <item
         android:id="@+id/w6"
         android:icon="@drawable/w6"
-        android:title="@string/rain"
+        android:title="w6"
         app:showAsAction="always"
         android:orderInCategory="6" />
     <item
         android:id="@+id/w7"
         android:icon="@drawable/w7"
-        android:title="@string/rain"
+        android:title="w7"
         app:showAsAction="always"
         android:menuCategory="container"
         android:orderInCategory="7" />
     <item
         android:id="@+id/w8"
         android:icon="@drawable/w8"
-        android:title="@string/rain"
+        android:title="w8"
         app:showAsAction="always"
         android:orderInCategory="8" />
     <item
         android:id="@+id/w9"
         android:icon="@drawable/w9"
-        android:title="@string/rain"
+        android:title="w9"
         android:orderInCategory="9" />
     <item
         android:id="@+id/w10"
         android:icon="@drawable/w10"
-        android:title="@string/rain"
+        android:title="w10"
         android:orderInCategory="10" />
 
     <!--<item-->

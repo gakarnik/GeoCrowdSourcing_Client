@@ -172,16 +172,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-// Profile
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
 // Notification
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
 // SignIn
         if(username.equals(""))
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
 // SignOut
-        if(!username.equals(""))
+        if(!username.equals("")) {
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+        }
 
 
 
@@ -194,8 +194,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
-        ((AppCompatActivity) mContext).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) mContext).getSupportActionBar().setHomeButtonEnabled(true);
+        ((AppCompatActivity) mContext).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((AppCompatActivity) mContext).getSupportActionBar().setHomeButtonEnabled(false);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_media_pause, //nav menu toggle icon
@@ -316,8 +316,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions()
                         .position(sydney)
                         .icon(BitmapDescriptorFactory.
-                                fromResource(getResources().getIdentifier(String.valueOf(item.getItemId()), "drawable", "com.example.map.map"))));
-                postWeather = con.new ConnectionPostWeatherToStats(sydney, String.valueOf(item.getItemId()));
+                                fromResource(getResources().getIdentifier((String)item.getTitle(), "drawable", "com.example.map.map"))));
+                postWeather = con.new ConnectionPostWeatherToStats(sydney, (String)item.getTitle());
                 postWeather.execute();
 //        switch (item.getItemId()){
 //            case R.id.rain:
@@ -435,8 +435,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return true;
 
                 case 2:     //request stats
-                    Toast.makeText(this, item.getTitle(),
-                            Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(MapsActivity.this, Graph.class);
+                    startActivity(i);
+                    finish();
                     return true;
                 default:
                     return super.onContextItemSelected(item);
@@ -652,7 +653,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 fragment = new HomeFragment();
                 break;
             case 3:
-                fragment = new HomeFragment();
+                fragment = new ProfileFragment();
+//                Intent res = new Intent(MapsActivity.this, Profile.class);
+//                startActivity(res);
+//                finish();
                 break;
             case 4:
                 fragment = new HomeFragment();
@@ -690,7 +694,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // display view for selected nav drawer item
             displayView(position);
 
-            if(position == 3){
+            if(position == 2){
                 if(username.equals("")){//login button activity
                     Intent res = new Intent(MapsActivity.this, SignInActivity.class);
                     startActivity(res);
@@ -706,8 +710,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
-
-
 }
 
 

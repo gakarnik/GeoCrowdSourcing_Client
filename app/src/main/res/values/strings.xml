@@ -23,11 +23,10 @@
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
         <item></item>
-        <item>Profile</item>
         <item>Notifications</item>
         <item>SignIn</item>
         <item>SignOut</item>
-
+        <item>Profile</item>
     </string-array>
 
     <!-- Map Spinner Options -->
@@ -94,4 +93,5 @@
     <!-- Server Client ID.  This should be a valid Web OAuth 2.0 Client ID obtained
          from https://console.developers.google.com/ -->
     <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
+    <string name="title_activity_graph">Graph</string>
 </resources>

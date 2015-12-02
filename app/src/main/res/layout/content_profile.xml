@@ -26,7 +26,6 @@
         android:text="Tommy Trojan"
         android:id="@+id/textView2"
         android:layout_marginTop="83dp"
-        android:layout_below="@+id/imageButton"
         android:layout_alignRight="@+id/ratingBar"
         android:layout_alignEnd="@+id/ratingBar" />
 
@@ -91,5 +90,6 @@
         android:choiceMode="singleChoice"
         android:textAlignment="gravity"
         android:layout_toStartOf="@+id/textView"
+        android:layout_toLeftOf="@+id/textView"
         android:layout_above="@+id/ratingBar" />
 </RelativeLayout>

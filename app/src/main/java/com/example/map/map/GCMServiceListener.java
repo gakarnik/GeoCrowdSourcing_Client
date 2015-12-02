@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.android.gms.location.LocationServices;
@@ -80,7 +81,7 @@ public class GCMServiceListener extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("GCM Message")
+                .setContentTitle("Get My Weather")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
